@@ -33,6 +33,13 @@ Product.init(
       validate: {
         isNumeric: true
       }
+    },
+    reader_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'category',
+        key: 'id'
+      }
     }
   },
   {
