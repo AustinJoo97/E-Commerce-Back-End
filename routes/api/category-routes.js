@@ -4,34 +4,31 @@ const { Category, Product } = require('../../models');
 // The `/api/categories` endpoint
 
 router.get('/', async (req, res) => {
-  // find all categories
-  // be sure to include its associated Products
   try{
     let categoriesAndAssociatedProducts = [];
-    // let allCategories = await Category.findAll();
     let allCategories = await Category.findAll();
-    let singleSet = {
-      category: undefined,
-      products: []
-    };
-
-    await allCategories.forEach(async (category) => {
-      singleSet.category = category.dataValues;
+    
+    for(let i = 0; i < allCategories.length; i++){
+      let singleSet = {
+        category: allCategories[i].dataValues,
+        associatedProducts: []
+      };
 
       let allProducts = await Product.findAll({
         where: {
-          category_id: category.id
+          category_id: allCategories[i].id
         }
       });
       allProducts.forEach((product) => {
-        singleSet.products.push(product.dataValues);
+        singleSet.associatedProducts.push(product.dataValues);
       })
 
       categoriesAndAssociatedProducts.push(singleSet);
-    })
-    
-    console.log(categoriesAndAssociatedProducts);
-    res.json(categoriesAndAssociatedProducts);
+
+      if(i === allCategories.length-1){
+        res.json(categoriesAndAssociatedProducts);
+      }
+    }
   }
   catch(err){
     res.status(500).json(err);
@@ -45,12 +42,14 @@ router.get('/:id', async (req, res) => {
       associatedProducts: []
     };
 
-    let category = await Category.findAll({
-      where: {
-        id: req.params.id
-      }
-    })
-    fullSet.category = category[0].dataValues
+    const category = await Category.findByPk(req.params.id)
+    if(!category){
+      res.status(404).json({message: 'This category does not exist!'});
+      return;
+    }
+
+    console.log(category);
+    fullSet.category = category.dataValues
 
     let associatedProducts = await Product.findAll({
       where: {
