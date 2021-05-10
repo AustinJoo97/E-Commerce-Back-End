@@ -5,30 +5,16 @@ const { Category, Product } = require('../../models');
 
 router.get('/', async (req, res) => {
   try{
-    let categoriesAndAssociatedProducts = [];
-    let allCategories = await Category.findAll();
+    const allCategories = await Category.findAll({
+      include: [{
+        model: Product
+      }]
+    });
     
-    for(let i = 0; i < allCategories.length; i++){
-      let singleSet = {
-        category: allCategories[i].dataValues,
-        associatedProducts: []
-      };
-
-      let allProducts = await Product.findAll({
-        where: {
-          category_id: allCategories[i].id
-        }
-      });
-      allProducts.forEach((product) => {
-        singleSet.associatedProducts.push(product.dataValues);
-      })
-
-      categoriesAndAssociatedProducts.push(singleSet);
-
-      if(i === allCategories.length-1){
-        res.json(categoriesAndAssociatedProducts);
-      }
+    if(!allCategories){
+      res.status(404).json({message: 'No categories exist!'})
     }
+    res.status(200).json(allCategories);
   }
   catch(err){
     res.status(500).json(err);
