@@ -4,9 +4,52 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 // The `/api/products` endpoint
 
 // get all products
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   // find all products
   // be sure to include its associated Category and Tag data
+  try{
+    let allProductsTagsAndCategories = [];
+    let allProducts = await Product.findAll();
+    
+    for(let i = 0; i < allProducts.length; i++){
+      let singleSet = {
+        product: allProducts[i].dataValues,
+        category: undefined,
+        tags: []
+      };
+
+
+      let categoryInfo = await Category.findByPk(singleSet.product.category_id);
+      singleSet.category = categoryInfo.dataValues.category_name;
+
+      let allProductTags = await ProductTag.findAll({
+        where: {
+          product_id: singleSet.product.id
+        }
+      })
+      let allTagIDs = [];
+      allProductTags.forEach((product) => {
+        allTagIDs.push(product.dataValues.tag_id);
+      })
+
+      for(let i = 0; i < allTagIDs.length; i++){
+        let tag = await Tag.findByPk(allTagIDs[i]);
+        singleSet.tags.push(tag.dataValues.tag_name);
+
+        if(i === allTagIDs.length-1){
+          console.log(singleSet);
+          allProductsTagsAndCategories.push(singleSet);
+        }
+      }
+
+      if(i === allProducts.length-1){
+        res.json(allProductsTagsAndCategories);
+      }
+    }
+  }
+  catch(err){
+    res.status(500).json(err);
+  }
 });
 
 // get one product
