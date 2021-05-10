@@ -9,12 +9,14 @@ router.get('/', async (req, res) => {
   try{
     let categoriesAndAssociatedProducts = [];
     // let allCategories = await Category.findAll();
-    let allCategories = await Category.findAll()
+    let allCategories = await Category.findAll();
+    let singleSet = {
+      category: undefined,
+      products: []
+    };
 
     await allCategories.forEach(async (category) => {
-      let fullSet = {};
-      fullSet.category = category.dataValues;
-      fullSet.products = [];
+      singleSet.category = category.dataValues;
 
       let allProducts = await Product.findAll({
         where: {
@@ -22,15 +24,13 @@ router.get('/', async (req, res) => {
         }
       });
       allProducts.forEach((product) => {
-        fullSet.products.push(product.dataValues);
+        singleSet.products.push(product.dataValues);
       })
 
-      categoriesAndAssociatedProducts.push(fullSet);
-
-      console.log(fullSet);
+      categoriesAndAssociatedProducts.push(singleSet);
     })
     
-    // console.log(categoriesAndAssociatedProducts);
+    console.log(categoriesAndAssociatedProducts);
     res.json(categoriesAndAssociatedProducts);
   }
   catch(err){
@@ -39,8 +39,6 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-  // find one category by its `id` value
-  // be sure to include its associated Products
   try{
     let fullSet = {
       category: undefined,
@@ -70,9 +68,12 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   // create a new category
-  try{}
+  try{
+    const newCategory = await Category.create(req.body);
+    res.status(200).json(newCategory);
+  }
   catch(err){
     res.status(500).json(err);
   }
