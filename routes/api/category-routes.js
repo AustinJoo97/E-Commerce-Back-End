@@ -23,30 +23,17 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try{
-    let fullSet = {
-      category: undefined,
-      associatedProducts: []
-    };
+    const category = await Category.findByPk(req.params.id, {
+      include: [{
+        model: Product
+      }]
+    })
 
-    const category = await Category.findByPk(req.params.id)
     if(!category){
       res.status(404).json({message: 'This category does not exist!'});
       return;
     }
-
-    console.log(category);
-    fullSet.category = category.dataValues
-
-    let associatedProducts = await Product.findAll({
-      where: {
-        category_id: req.params.id
-      }
-    })
-    associatedProducts.forEach((product) => {
-      fullSet.associatedProducts.push(product.dataValues);
-    })
-
-    res.json(fullSet);
+    res.status(200).json(category);
   }
   catch(err){
     res.status(500).json(err);
