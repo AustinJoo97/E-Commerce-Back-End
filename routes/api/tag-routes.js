@@ -13,7 +13,8 @@ router.get('/', async (req, res) => {
     })
   
     if(!tags){
-      res.status(404).json({message: 'No results for this tag!'})
+      res.status(404).json({message: 'No results for this tag!'});
+      return;
     }
     res.status(200).json(tags);
   }
@@ -32,7 +33,8 @@ router.get('/:id', async (req, res) => {
     })
   
     if(!tags){
-      res.status(404).json({message: 'No results for this tag!'})
+      res.status(404).json({message: 'No results for this tag!'});
+      return;
     }
     res.status(200).json(tags);
   }
@@ -45,7 +47,8 @@ router.post('/', async (req, res) => {
   try{
     const tags = await Tag.create(req.body);
     if(!tags){
-      res.status(404).json({message: 'Error! Try again later!'})
+      res.status(404).json({message: 'Error! Try again later!'});
+      return;
     }
     res.status(200).json(tags);
   }
@@ -62,7 +65,8 @@ router.put('/:id', async (req, res) => {
       }
     })
     if(!updatedTag){
-      res.status(404).json({message: 'No tag with this ID exists!'})
+      res.status(404).json({message: 'No tag with this ID exists!'});
+      return;
     }
     res.status(200).json(updatedTag)
   }
@@ -79,7 +83,8 @@ router.delete('/:id', async (req, res) => {
       }
     });
     if(!deleteTag){
-      res.status(404).json({message: 'No tag with the searched ID exists!'})
+      res.status(404).json({message: 'No tag with the searched ID exists!'});
+      return;
     }
     res.status(200).json(deleteTag);
   }

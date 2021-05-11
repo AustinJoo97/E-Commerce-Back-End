@@ -12,7 +12,8 @@ router.get('/', async (req, res) => {
     });
     
     if(!allCategories){
-      res.status(404).json({message: 'No categories exist!'})
+      res.status(404).json({message: 'No categories exist!'});
+      return;
     }
     res.status(200).json(allCategories);
   }
@@ -44,7 +45,8 @@ router.post('/', async (req, res) => {
   try{
     const newCategory = await Category.create(req.body);
     if(!newCategory){
-      res.status(404).json({message: 'Error! Try again later!'})
+      res.status(404).json({message: 'Error! Try again later!'});
+      return;
     }
     res.status(200).json(newCategory);
   }
