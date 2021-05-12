@@ -73,8 +73,6 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// SITUATION WHERE UPDATING PRODUCT RETURNS A "0" DESPITE SUCCESSFULLY UPDATING INFORMATION OF PRODUCT AND ALL ASSOCIATED TAGS IN DB
-
 router.delete('/:id', async (req, res) => {
   try{
     let deletedCategory = await Category.destroy({
